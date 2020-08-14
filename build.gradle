@@ -1,0 +1,33 @@
+plugins {
+  id 'java'
+}
+
+group = "merz.atdd"
+version = "1.0-SNAPSHOT"
+
+repositories {
+  mavenCentral()
+}
+
+configurations {
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+}
+
+dependencies {
+  testCompile "junit:junit:4.12"
+  testImplementation 'io.cucumber:cucumber-java:6.2.2'
+  testImplementation 'io.cucumber:cucumber-junit:6.2.2'
+}
+
+task cucumber() {
+    dependsOn assemble, testClasses
+    doLast {
+        javaexec {
+            main = "io.cucumber.core.cli.Main"
+            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+            args = ['--plugin', 'pretty', '--glue', 'atdd', 'src/test/resources']
+        }
+    }
+}
